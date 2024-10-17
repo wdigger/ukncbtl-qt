@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(emubase)
+add_subdirectory(util)
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets LinguistTools Script Multimedia Test)
 
@@ -16,7 +17,6 @@ set(CMAKE_AUTORCC ON)
 set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
-    util/WavPcmFile.cpp
     Common.cpp
     Emulator.cpp
     qscreen.cpp
@@ -34,7 +34,6 @@ set(PROJECT_SOURCES
 set(PROJECT_HEADERS
     mainwindow.h
     stdafx.h
-    util/WavPcmFile.h
     Common.h
     Emulator.h
     qscreen.h
@@ -65,7 +64,7 @@ add_executable(QtUkncBtl
 )
 
 target_include_directories(QtUkncBtl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(QtUkncBtl PRIVATE emubase Qt5::Widgets Qt5::Script Qt5::Multimedia Qt5::Test)
+target_link_libraries(QtUkncBtl PRIVATE emubase util Qt5::Widgets Qt5::Script Qt5::Multimedia Qt5::Test)
 
 set_target_properties(QtUkncBtl PROPERTIES
     ${BUNDLE_ID_OPTION}
