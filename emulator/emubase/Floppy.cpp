@@ -104,11 +104,11 @@ bool CFloppyController::AttachImage(int drive, LPCTSTR sFileName)
 
     // Open file
     m_drivedata[drive].okReadOnly = false;
-    m_drivedata[drive].fpFile = ::_tfopen(sFileName, _T("r+b"));
+    m_drivedata[drive].fpFile = ::fopen(sFileName, "r+b");
     if (m_drivedata[drive].fpFile == nullptr)
     {
         m_drivedata[drive].okReadOnly = true;
-        m_drivedata[drive].fpFile = ::_tfopen(sFileName, _T("rb"));
+        m_drivedata[drive].fpFile = ::fopen(sFileName, "rb");
     }
     if (m_drivedata[drive].fpFile == nullptr)
         return false;
@@ -142,7 +142,7 @@ void CFloppyController::DetachImage(int drive)
 //////////////////////////////////////////////////////////////////////
 
 
-uint16_t CFloppyController::GetState(void)
+uint16_t CFloppyController::GetState()
 {
     if (m_track == 0)
         m_status |= FLOPPY_STATUS_TRACK0;
@@ -242,7 +242,7 @@ void CFloppyController::SetCommand(uint16_t cmd)
     }
 }
 
-uint16_t CFloppyController::GetData(void)
+uint16_t CFloppyController::GetData()
 {
     if (m_okTrace) DebugLogFormat(_T("Floppy READ\t\t%04x\r\n"), m_datareg);
 
