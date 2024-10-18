@@ -11,6 +11,7 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 /// \file Board.cpp  Motherboard class implementation
 
 #include "Emubase.h"
+#include "Floppy.h"
 #include "Board.h"
 
 #include <cstring>

@@ -10,6 +10,7 @@
 #include <QDir>
 #include "main.h"
 #include "mainwindow.h"
+#include "Debug.h"
 
 
 //////////////////////////////////////////////////////////////////////

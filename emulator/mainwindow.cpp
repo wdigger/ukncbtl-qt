@@ -670,7 +670,8 @@ bool MainWindow::attachFloppy(int slot, const QString & strFileName)
     QFileInfo fi(strFileName);
     QString strFullName(fi.canonicalFilePath());  // Get absolute file name
 
-    LPCTSTR sFileName = qPrintable(strFullName);
+    QByteArray utf8FullName = strFullName.toUtf8();
+    const char *sFileName = utf8FullName.constData();
     if (! g_pBoard->AttachFloppyImage(slot, sFileName))
         return false;
 

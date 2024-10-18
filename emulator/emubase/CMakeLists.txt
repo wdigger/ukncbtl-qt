@@ -18,6 +18,7 @@ set(EMUBASE_SOURCES
 set(EMUBASE_HEADERS
     Board.h
     Defines.h
+    Floppy.h
     Emubase.h
     Memory.h
     Processor.h
