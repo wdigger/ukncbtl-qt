@@ -10,7 +10,6 @@ set(UTIL_SOURCES
 )
 
 set(UTIL_HEADERS
-    stdafx.h
     WavPcmFile.h
 )
 

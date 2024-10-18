@@ -10,33 +10,35 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 // WavPcmFile.h
 
-#pragma once
+#ifndef WAVPCMFILE_H_
+#define WAVPCMFILE_H_
 
 //////////////////////////////////////////////////////////////////////
 
-DECLARE_HANDLE(HWAVPCMFILE);
+typedef void* HWAVPCMFILE;
 
 // Creates WAV file, one-channel, 8 bits per sample
-HWAVPCMFILE WavPcmFile_Create(LPCTSTR filename, int sampleRate);
+HWAVPCMFILE WavPcmFile_Create(const char* filename, int sampleRate);
 // Prepare WAV file of PCM format for reading
-HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename);
+HWAVPCMFILE WavPcmFile_Open(const char* filename);
 // Close WAV file
 void WavPcmFile_Close(HWAVPCMFILE wavpcmfile);
 
 // Samples per second, Hz
 int WavPcmFile_GetFrequency(HWAVPCMFILE wavpcmfile);
 // Length of the stream, in samples
-uint32_t WavPcmFile_GetLength(HWAVPCMFILE wavpcmfile);
+unsigned int WavPcmFile_GetLength(HWAVPCMFILE wavpcmfile);
 
 // Current position in the stream, in samples, zero-based
-uint32_t WavPcmFile_GetPosition(HWAVPCMFILE wavpcmfile);
+unsigned int WavPcmFile_GetPosition(HWAVPCMFILE wavpcmfile);
 // Set current position in the stream, in samples, zero-based
-void WavPcmFile_SetPosition(HWAVPCMFILE wavpcmfile, uint32_t position);
+void WavPcmFile_SetPosition(HWAVPCMFILE wavpcmfile, unsigned int position);
 
 // Read one sample scaled to int type range
 unsigned int WavPcmFile_ReadOne(HWAVPCMFILE wavpcmfile);
 // Write one sample scaled to int type range
 bool WavPcmFile_WriteOne(HWAVPCMFILE wavpcmfile, unsigned int value);
 
-
 //////////////////////////////////////////////////////////////////////
+
+#endif  // WAVPCMFILE_H_

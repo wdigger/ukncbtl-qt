@@ -10,11 +10,13 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 // WavPcmFile.cpp
 
-#include "stdafx.h"
 #include "WavPcmFile.h"
-#include <cstdio>
-//#include <share.h>
 
+#include <cstdlib>
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////
 
@@ -42,7 +44,7 @@ struct WAVPCMFILE
 
 int WavPcmFile_GetFrequency(HWAVPCMFILE wavpcmfile)
 {
-    if (wavpcmfile == INVALID_HANDLE_VALUE)
+    if (wavpcmfile == nullptr)
         return 0;
 
     WAVPCMFILE* pWavPcm = reinterpret_cast<WAVPCMFILE*>(wavpcmfile);
@@ -50,9 +52,9 @@ int WavPcmFile_GetFrequency(HWAVPCMFILE wavpcmfile)
     return pWavPcm->nSampleFrequency;
 }
 
-uint32_t WavPcmFile_GetLength(HWAVPCMFILE wavpcmfile)
+unsigned int WavPcmFile_GetLength(HWAVPCMFILE wavpcmfile)
 {
-    if (wavpcmfile == INVALID_HANDLE_VALUE)
+    if (wavpcmfile == nullptr)
         return 0;
 
     WAVPCMFILE* pWavPcm = reinterpret_cast<WAVPCMFILE*>(wavpcmfile);
@@ -60,9 +62,9 @@ uint32_t WavPcmFile_GetLength(HWAVPCMFILE wavpcmfile)
     return pWavPcm->dwDataSize / pWavPcm->nBlockAlign;
 }
 
-uint32_t WavPcmFile_GetPosition(HWAVPCMFILE wavpcmfile)
+unsigned int WavPcmFile_GetPosition(HWAVPCMFILE wavpcmfile)
 {
-    if (wavpcmfile == INVALID_HANDLE_VALUE)
+    if (wavpcmfile == nullptr)
         return 0;
 
     WAVPCMFILE* pWavPcm = reinterpret_cast<WAVPCMFILE*>(wavpcmfile);
@@ -70,9 +72,9 @@ uint32_t WavPcmFile_GetPosition(HWAVPCMFILE wavpcmfile)
     return pWavPcm->dwCurrentPosition;
 }
 
-void WavPcmFile_SetPosition(HWAVPCMFILE wavpcmfile, uint32_t position)
+void WavPcmFile_SetPosition(HWAVPCMFILE wavpcmfile, unsigned int position)
 {
-    if (wavpcmfile == INVALID_HANDLE_VALUE)
+    if (wavpcmfile == nullptr)
         return;
 
     WAVPCMFILE* pWavPcm = reinterpret_cast<WAVPCMFILE*>(wavpcmfile);
@@ -83,7 +85,7 @@ void WavPcmFile_SetPosition(HWAVPCMFILE wavpcmfile, uint32_t position)
     pWavPcm->dwCurrentPosition = position;
 }
 
-HWAVPCMFILE WavPcmFile_Create(LPCTSTR filename, int sampleRate)
+HWAVPCMFILE WavPcmFile_Create(const char* filename, int sampleRate)
 {
     const int bitsPerSample = 8;
     const int channels = 1;
@@ -91,7 +93,7 @@ HWAVPCMFILE WavPcmFile_Create(LPCTSTR filename, int sampleRate)
 
     FILE* fpFileNew = ::fopen(filename, "w+b");
     if (fpFileNew == nullptr)
-        return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to create file
+        return nullptr;  // Failed to create file
 
     // Prepare and write file header
     uint8_t consolidated_header[12 + 8 + 16 + 8];
@@ -116,14 +118,14 @@ HWAVPCMFILE WavPcmFile_Create(LPCTSTR filename, int sampleRate)
     if (bytesWritten != sizeof(consolidated_header))
     {
         ::fclose(fpFileNew);
-        return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to write consolidated header
+        return nullptr;  // Failed to write consolidated header
     }
 
     WAVPCMFILE* pWavPcm = static_cast<WAVPCMFILE*>(::calloc(1, sizeof(WAVPCMFILE)));
     if (pWavPcm == nullptr)
     {
         ::fclose(fpFileNew);
-        return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to allocate memory
+        return nullptr;  // Failed to allocate memory
     }
     pWavPcm->fpFile = fpFileNew;
     pWavPcm->nChannels = channels;
@@ -139,11 +141,11 @@ HWAVPCMFILE WavPcmFile_Create(LPCTSTR filename, int sampleRate)
     return reinterpret_cast<HWAVPCMFILE>(pWavPcm);
 }
 
-HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
+HWAVPCMFILE WavPcmFile_Open(const char* filename)
 {
     FILE* fpFileOpen = ::fopen(filename, "rb");
     if (fpFileOpen == nullptr)
-        return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to open file
+        return nullptr;  // Failed to open file
 
     uint32_t offset = 0;
     ::fseek(fpFileOpen, 0, SEEK_END);
@@ -157,7 +159,7 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
         memcmp(&fileHeader[8], magic2, 4) != 0)
     {
         ::fclose(fpFileOpen);
-        return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to read file header OR invalid 'RIFF' tag OR invalid 'WAVE' tag
+        return nullptr;  // Failed to read file header OR invalid 'RIFF' tag OR invalid 'WAVE' tag
     }
     offset += bytesRead;
 
@@ -176,7 +178,7 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
         if (bytesRead != sizeof(tagHeader))
         {
             ::fclose(fpFileOpen);
-            return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to read tag header
+            return nullptr;  // Failed to read tag header
         }
         offset += bytesRead;
 
@@ -186,7 +188,7 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
             if (formatSpecified || tagSize < sizeof(formatTag))
             {
                 ::fclose(fpFileOpen);
-                return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Wrong tag header
+                return nullptr;  // Wrong tag header
             }
             formatSpecified = true;
 
@@ -194,7 +196,7 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
             if (bytesRead != sizeof(formatTag))
             {
                 ::fclose(fpFileOpen);
-                return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to read format tag
+                return nullptr;  // Failed to read format tag
             }
 
             formatType = formatTag[0];
@@ -207,13 +209,13 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
             if (formatType != WAV_FORMAT_PCM)
             {
                 ::fclose(fpFileOpen);
-                return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Unsupported format
+                return nullptr;  // Unsupported format
             }
             if (sampleFrequency * bitsPerSample * channels / 8 != bytesPerSecond ||
                 (bitsPerSample != 8 && bitsPerSample != 16 && bitsPerSample != 32))
             {
                 ::fclose(fpFileOpen);
-                return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Wrong format tag
+                return nullptr;  // Wrong format tag
             }
         }
         else if (!memcmp(tagHeader, data_tag_id, 4))
@@ -221,7 +223,7 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
             if (!formatSpecified)
             {
                 ::fclose(fpFileOpen);
-                return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Wrong tag
+                return nullptr;  // Wrong tag
             }
 
             dataOffset = offset;
@@ -239,7 +241,7 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
     if (pWavPcm == nullptr)
     {
         ::fclose(fpFileOpen);
-        return static_cast<HWAVPCMFILE>(INVALID_HANDLE_VALUE);  // Failed to allocate memory
+        return nullptr;  // Failed to allocate memory
     }
     pWavPcm->fpFile = fpFileOpen;
     pWavPcm->nChannels = channels;
@@ -257,7 +259,7 @@ HWAVPCMFILE WavPcmFile_Open(LPCTSTR filename)
 
 void WavPcmFile_Close(HWAVPCMFILE wavpcmfile)
 {
-    if (wavpcmfile == INVALID_HANDLE_VALUE)
+    if (wavpcmfile == nullptr)
         return;
 
     WAVPCMFILE* pWavPcm = reinterpret_cast<WAVPCMFILE*>(wavpcmfile);
@@ -280,14 +282,14 @@ void WavPcmFile_Close(HWAVPCMFILE wavpcmfile)
 
 bool WavPcmFile_WriteOne(HWAVPCMFILE wavpcmfile, unsigned int value)
 {
-    if (wavpcmfile == INVALID_HANDLE_VALUE)
+    if (wavpcmfile == nullptr)
         return false;
 
     WAVPCMFILE* pWavPcm = reinterpret_cast<WAVPCMFILE*>(wavpcmfile);
     if (!pWavPcm->okWriting)
         return false;
-    ASSERT(pWavPcm->nBitsPerSample == 8);
-    ASSERT(pWavPcm->nChannels == 1);
+    assert(pWavPcm->nBitsPerSample == 8);
+    assert(pWavPcm->nChannels == 1);
 
     uint8_t data = (uint8_t)((value >> 24) & 0xff);
 
@@ -303,7 +305,7 @@ bool WavPcmFile_WriteOne(HWAVPCMFILE wavpcmfile, unsigned int value)
 
 unsigned int WavPcmFile_ReadOne(HWAVPCMFILE wavpcmfile)
 {
-    if (wavpcmfile == INVALID_HANDLE_VALUE)
+    if (wavpcmfile == nullptr)
         return 0;
 
     WAVPCMFILE* pWavPcm = reinterpret_cast<WAVPCMFILE*>(wavpcmfile);
@@ -338,6 +340,5 @@ unsigned int WavPcmFile_ReadOne(HWAVPCMFILE wavpcmfile)
 
     return value;
 }
-
 
 //////////////////////////////////////////////////////////////////////
