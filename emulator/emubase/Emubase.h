@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
     UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -16,6 +16,7 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 #include "Processor.h"
 #include "Memory.h"
 
+#include <cstdio>
 
 //////////////////////////////////////////////////////////////////////
 // Disassembler
@@ -26,14 +27,14 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 /// \param[out] sInstr  Instruction mnemonics buffer - at least 8 characters
 /// \param[out] sArg    Instruction arguments buffer - at least 32 characters
 /// \return  Number of words in the instruction
-uint16_t DisassembleInstruction(const uint16_t* pMemory, uint16_t addr, TCHAR* sInstr, TCHAR* sArg);
+uint16_t DisassembleInstruction(const uint16_t* pMemory, uint16_t addr, char* sInstr, char* sArg);
 
 bool Disasm_CheckForJump(const uint16_t* memory, int* pDelta);
 
 // Prepare "Jump Hint" string, and also calculate condition for conditional jump
 // Returns: jump prediction flag: true = will jump, false = will not jump
 bool Disasm_GetJumpConditionHint(
-    const uint16_t* memory, const CProcessor * pProc, const CMemoryController * pMemCtl, LPTSTR buffer);
+    const uint16_t* memory, const CProcessor * pProc, const CMemoryController * pMemCtl, char* buffer);
 
 // Prepare "Instruction Hint" for a regular instruction (not a branch/jump one)
 // buffer, buffer2 - buffers for 1st and 2nd lines of the instruction hint, min size 42
@@ -41,7 +42,7 @@ bool Disasm_GetJumpConditionHint(
 int Disasm_GetInstructionHint(
     const uint16_t* memory, const CProcessor * pProc,
     const CMemoryController * pMemCtl,
-    LPTSTR buffer, LPTSTR buffer2);
+    char* buffer, char* buffer2);
 
 
 //////////////////////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ public:
     void Reset();       ///< Reset the device
 
     /// \brief Attach the image to the drive -- insert disk
-    bool AttachImage(int drive, LPCTSTR sFileName);
+    bool AttachImage(int drive, const char* sFileName);
     /// \brief Detach image from the drive -- remove disk
     void DetachImage(int drive);
     /// \brief Check if the drive has an image attached
@@ -178,7 +179,7 @@ public:
     /// \brief Reset the device.
     void Reset();
     /// \brief Attach HDD image file to the device
-    bool AttachImage(LPCTSTR sFileName);
+    bool AttachImage(const char* sFileName);
     /// \brief Detach HDD image file from the device
     void DetachImage();
     /// \brief Check if the attached hard drive image is read-only

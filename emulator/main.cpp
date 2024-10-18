@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include <QApplication>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
@@ -7,7 +7,7 @@
 #include "main.h"
 #include "mainwindow.h"
 #include "Emulator.h"
-
+#include "Debug.h"
 
 void RestoreSettings();
 
@@ -54,6 +54,12 @@ int main(int argc, char *argv[])
         return 0;
     }
 #endif
+    
+#ifdef PRODUCT
+    DebugSetup(nullptr, nullptr);
+#else  // PRODUCT
+    DebugSetup(&DebugPrintProc, &DebugLogProc);
+#endif  // PRODUCT
 
     QApplication application(argc, argv);
     g_Application = &application;

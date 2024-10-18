@@ -1,4 +1,4 @@
-﻿// Common.cpp
+// Common.cpp
 
 #include "stdafx.h"
 #include <QClipboard>
@@ -67,23 +67,11 @@ void DebugLog(const char*) {}
 void DebugLogFormat(const char*, ...) {}
 #else
 
-void DebugPrint(const char* message)
+void DebugPrintProc(const char* message)
 {
     MainWindow* mainWindow = Global_getMainWindow();
     if (mainWindow != nullptr)
         mainWindow->consolePrint(message);
-}
-
-void DebugPrintFormat(const char* pszFormat, ...)
-{
-    char buffer[512];
-
-    va_list ptr;
-    va_start(ptr, pszFormat);
-    vsnprintf(buffer, 512, pszFormat, ptr);
-    va_end(ptr);
-
-    DebugPrint(buffer);
 }
 
 const char* TRACELOG_FILE_NAME = "trace.log";
@@ -91,7 +79,7 @@ const char* TRACELOG_NEWLINE = "\r\n";
 
 FILE* Common_LogFile = nullptr;
 
-void DebugLog(const char* message)
+void DebugLogProc(const char* message)
 {
     if (Common_LogFile == nullptr)
     {

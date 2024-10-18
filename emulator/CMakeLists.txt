@@ -5,8 +5,8 @@ project(QtUkncBtl VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(emubase)
 add_subdirectory(util)
+add_subdirectory(emubase)
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets LinguistTools Script Multimedia Test)
 
@@ -63,6 +63,7 @@ add_executable(QtUkncBtl
     ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc
 )
 
+include_directories(${util_SOURCE_DIR})
 target_include_directories(QtUkncBtl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(QtUkncBtl PRIVATE emubase util Qt5::Widgets Qt5::Script Qt5::Multimedia Qt5::Test)
 

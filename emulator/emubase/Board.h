@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
     UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -13,6 +13,9 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 #pragma once
 
 #include "Defines.h"
+
+#include <cstdint>
+#include <cassert>
 
 class CProcessor;
 class CMemoryController;
@@ -63,51 +66,51 @@ typedef struct kbd_row_tag
 //   samples    Number of samples to play.
 // Output:
 //   result     Bit to put in tape input port.
-typedef bool (CALLBACK* TAPEREADCALLBACK)(unsigned int samples);
+typedef bool (* TAPEREADCALLBACK)(unsigned int samples);
 
 // Tape emulator callback used to write a data to tape.
 // Input:
 //   value      Sample value to write.
-typedef void (CALLBACK* TAPEWRITECALLBACK)(int value, unsigned int samples);
+typedef void (* TAPEWRITECALLBACK)(int value, unsigned int samples);
 
 // Sound generator callback function type
-typedef void (CALLBACK* SOUNDGENCALLBACK)(unsigned short L, unsigned short R);
+typedef void (* SOUNDGENCALLBACK)(unsigned short L, unsigned short R);
 
 // Network port callback for receiving
 // Output:
 //   pbyte      Byte received
 //   result     true means we have a new byte, false means not ready yet
-typedef bool (CALLBACK* NETWORKINCALLBACK)(uint8_t* pbyte);
+typedef bool (* NETWORKINCALLBACK)(uint8_t* pbyte);
 
 // Network port callback for translating
 // Input:
 //   byte       A byte to translate
 // Output:
 //   result     true means we translated the byte successfully, false means we have an error
-typedef bool (CALLBACK* NETWORKOUTCALLBACK)(uint8_t byte);
+typedef bool (* NETWORKOUTCALLBACK)(uint8_t byte);
 
 // Serial port callback for receiving
 // Output:
 //   pbyte      Byte received
 //   result     true means we have a new byte, false means not ready yet
-typedef bool (CALLBACK* SERIALINCALLBACK)(uint8_t* pbyte);
+typedef bool (* SERIALINCALLBACK)(uint8_t* pbyte);
 
 // Serial port callback for translating
 // Input:
 //   byte       A byte to translate
 // Output:
 //   result     true means we translated the byte successfully, false means we have an error
-typedef bool (CALLBACK* SERIALOUTCALLBACK)(uint8_t byte);
+typedef bool (* SERIALOUTCALLBACK)(uint8_t byte);
 
 // Parallel port output callback
 // Input:
 //   byte       An output byte
 // Output:
 //   result     true means OK, false means we have an error
-typedef bool (CALLBACK* PARALLELOUTCALLBACK)(uint8_t byte);
+typedef bool (* PARALLELOUTCALLBACK)(uint8_t byte);
 
 // Terminal out callback -- CPU sends character by channel 0
-typedef void (CALLBACK* TERMINALOUTCALLBACK)(uint8_t byte);
+typedef void (* TERMINALOUTCALLBACK)(uint8_t byte);
 
 class CFloppyController;
 class CHardDrive;
@@ -120,7 +123,7 @@ class CBusDevice
 {
 public:
     /// \brief Name of the device
-    virtual LPCTSTR GetName() const = 0;
+    virtual const char* GetName() const = 0;
     /// \brief Device address ranges: [address, length] pairs, last pair is [0,0]
     virtual const uint16_t* GetAddressRanges() const = 0;
 
@@ -241,7 +244,7 @@ public:  // System control
     void        MouseMove(int16_t dx, int16_t dy, bool btnLeft, bool btnRight);
 
     /// \brief Attach floppy image to the slot -- insert the disk.
-    bool        AttachFloppyImage(int slot, LPCTSTR sFileName);
+    bool        AttachFloppyImage(int slot, const char* sFileName);
     /// \brief Empty the floppy slot -- remove the disk.
     void        DetachFloppyImage(int slot);
     /// \brief Check if the floppy attached.
@@ -263,7 +266,7 @@ public:  // System control
     void        UnloadROMCartridge(int cartno);
 
     /// \brief Attach hard drive image to the slot.
-    bool        AttachHardImage(int slot, LPCTSTR sFileName);
+    bool        AttachHardImage(int slot, const char* sFileName);
     /// \brief Empty hard drive slot.
     void        DetachHardImage(int slot);
     /// \brief Check if the hard drive attached.
@@ -346,22 +349,22 @@ private:
 
 inline uint16_t CMotherboard::GetRAMWord(int plan, uint16_t offset) const
 {
-    ASSERT(plan >= 0 && plan <= 2);
+    assert(plan >= 0 && plan <= 2);
     return *((uint16_t*)(m_pRAM[plan] + (offset & 0xFFFE)));
 }
 inline uint8_t CMotherboard::GetRAMByte(int plan, uint16_t offset) const
 {
-    ASSERT(plan >= 0 && plan <= 2);
+    assert(plan >= 0 && plan <= 2);
     return m_pRAM[plan][offset];
 }
 inline void CMotherboard::SetRAMWord(int plan, uint16_t offset, uint16_t word)
 {
-    ASSERT(plan >= 0 && plan <= 2);
+    assert(plan >= 0 && plan <= 2);
     *((uint16_t*)(m_pRAM[plan] + (offset & 0xFFFE))) = word;
 }
 inline void CMotherboard::SetRAMByte(int plan, uint16_t offset, uint8_t byte)
 {
-    ASSERT(plan >= 0 && plan <= 2);
+    assert(plan >= 0 && plan <= 2);
     m_pRAM[plan][offset] = byte;
 }
 

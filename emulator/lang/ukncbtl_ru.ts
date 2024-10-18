@@ -4,7 +4,7 @@
 <context>
     <name>Common</name>
     <message>
-        <location filename="../Common.cpp" line="21"/>
+        <location filename="../Common.cpp" line="22"/>
         <source>ASSERTION FAILED
 
 File: %s
@@ -14,10 +14,10 @@ Press Abort to stop the program, Retry to break to the debugger, or Ignore to co
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common.cpp" line="25"/>
-        <location filename="../Common.cpp" line="41"/>
-        <location filename="../Common.cpp" line="47"/>
-        <location filename="../Common.cpp" line="53"/>
+        <location filename="../Common.cpp" line="26"/>
+        <location filename="../Common.cpp" line="42"/>
+        <location filename="../Common.cpp" line="48"/>
+        <location filename="../Common.cpp" line="54"/>
         <source>UKNC Back to Life</source>
         <translation></translation>
     </message>
@@ -61,324 +61,177 @@ Press Abort to stop the program, Retry to break to the debugger, or Ignore to co
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.ui" line="14"/>
-        <source>MainWindow</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="28"/>
         <source>File</source>
-        <translation>Файл</translation>
+        <translation type="vanished">Файл</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="32"/>
         <source>UI Language</source>
-        <translation>Язык интерфейса</translation>
+        <translation type="vanished">Язык интерфейса</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="53"/>
         <source>Emulator</source>
-        <translation>Эмулятор</translation>
+        <translation type="vanished">Эмулятор</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="65"/>
         <source>Configuration</source>
-        <translation>Конфигурация</translation>
+        <translation type="vanished">Конфигурация</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="79"/>
         <source>Help</source>
-        <translation>Справка</translation>
+        <translation type="vanished">Справка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="85"/>
         <location filename="../mainwindow.cpp" line="105"/>
         <source>Debug</source>
         <translation>Отладка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="101"/>
         <source>View</source>
-        <translation>Вид</translation>
+        <translation type="vanished">Вид</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="170"/>
         <source>Exit</source>
-        <translation>Выход</translation>
+        <translation type="vanished">Выход</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="182"/>
         <source>Run</source>
-        <translation>Пуск</translation>
+        <translation type="vanished">Пуск</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="185"/>
-        <source>F9</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="194"/>
         <source>Reset</source>
-        <translation>Сброс</translation>
+        <translation type="vanished">Сброс</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="199"/>
-        <source>About Qt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="212"/>
         <source>Floppy MZ0:</source>
-        <translation>Диск MZ0:</translation>
+        <translation type="vanished">Диск MZ0:</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="215"/>
-        <source>0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="228"/>
         <source>Floppy MZ1:</source>
-        <translation>Диск MZ1:</translation>
+        <translation type="vanished">Диск MZ1:</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="231"/>
-        <location filename="../mainwindow.ui" line="279"/>
-        <location filename="../mainwindow.ui" line="294"/>
-        <source>1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="244"/>
         <source>Floppy MZ2:</source>
-        <translation>Диск MZ2:</translation>
+        <translation type="vanished">Диск MZ2:</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="247"/>
-        <location filename="../mainwindow.ui" line="310"/>
-        <location filename="../mainwindow.ui" line="325"/>
-        <source>2</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="260"/>
         <source>Floppy MZ3:</source>
-        <translation>Диск MZ3:</translation>
+        <translation type="vanished">Диск MZ3:</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="263"/>
-        <source>3</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="276"/>
         <source>Cartridge 1</source>
-        <translation>Картридж 1</translation>
+        <translation type="vanished">Картридж 1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="291"/>
         <source>Hard Drive 1</source>
-        <translation>Жесткий диск 1</translation>
+        <translation type="vanished">Жесткий диск 1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="307"/>
         <source>Cartridge 2</source>
-        <translation>Картридж 2</translation>
+        <translation type="vanished">Картридж 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="322"/>
         <source>Hard Drive 2</source>
-        <translation>Жесткий диск 2</translation>
+        <translation type="vanished">Жесткий диск 2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="334"/>
-        <location filename="../mainwindow.ui" line="337"/>
         <source>Screenshot</source>
-        <translation>Скриншот</translation>
+        <translation type="vanished">Скриншот</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="349"/>
-        <source>F7</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="346"/>
         <source>Step Into</source>
-        <translation>Шаг внутрь</translation>
+        <translation type="vanished">Шаг внутрь</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="361"/>
-        <source>F8</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="358"/>
         <source>Step Over</source>
-        <translation>Шаг поверх</translation>
+        <translation type="vanished">Шаг поверх</translation>
     </message>
     <message>
         <source>Processor View</source>
         <translation type="obsolete">Вид Процессор</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="369"/>
         <source>Disasm View</source>
-        <translation type="unfinished">Окно Дизасм</translation>
+        <translation type="obsolete">Окно Дизасм</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="377"/>
         <source>Memory View</source>
-        <translation type="unfinished">Окно Память</translation>
+        <translation type="obsolete">Окно Память</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="389"/>
         <source>Debug Views</source>
-        <translation type="unfinished">Окно Отладка</translation>
+        <translation type="obsolete">Окно Отладка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="397"/>
         <source>RGB Screen</source>
-        <translation>Цвета RGB</translation>
+        <translation type="vanished">Цвета RGB</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="405"/>
         <source>Grayscale Screen</source>
-        <translation>Оттенки серого</translation>
+        <translation type="vanished">Оттенки серого</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="410"/>
         <source>About</source>
-        <translation>О программе</translation>
+        <translation type="vanished">О программе</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="418"/>
-        <source>640 x 288 Standard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="426"/>
-        <source>640 x 432 Upscaled to 1.5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="434"/>
-        <source>640 x 576 Doubled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="449"/>
-        <source>Sound Enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="452"/>
         <source>Sound</source>
-        <translation>Звук</translation>
+        <translation type="vanished">Звук</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="457"/>
         <source>Run Script...</source>
-        <translation type="unfinished">Выполнить сценарий...</translation>
+        <translation type="obsolete">Выполнить сценарий...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="465"/>
-        <source>960 x 576 Interlaced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="473"/>
-        <source>1280 x 864 Interlaced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="481"/>
-        <source>1920 x 1440 4:3 Interlaced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="486"/>
         <source>Save State...</source>
-        <translation>Сохранить состояние...</translation>
+        <translation type="vanished">Сохранить состояние...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="491"/>
         <source>Load State...</source>
-        <translation>Загрузить состояние...</translation>
+        <translation type="vanished">Загрузить состояние...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="502"/>
         <source>Keyboard</source>
-        <translation>Клавиатура</translation>
+        <translation type="vanished">Клавиатура</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="507"/>
         <source>Save Screenshot as...</source>
-        <translation>Сохранить скриншот как...</translation>
+        <translation type="vanished">Сохранить скриншот как...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="515"/>
         <source>GRB Screen</source>
-        <translation type="unfinished">Цвета GRB</translation>
+        <translation type="obsolete">Цвета GRB</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="523"/>
-        <source>640 x 576 Interlaced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="531"/>
-        <source>1120 x 864 Interlaced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="539"/>
-        <source>960 x 720 4:3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="544"/>
         <source>Screenshot to Clipboard</source>
-        <translation>Скриншот в Буфер обмена</translation>
+        <translation type="vanished">Скриншот в Буфер обмена</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="549"/>
         <source>Screen Text to Clipboard</source>
-        <translation>Текст с экрана в Буфер обмена</translation>
+        <translation type="vanished">Текст с экрана в Буфер обмена</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="557"/>
         <source>Autostart</source>
-        <translation>Автозапуск</translation>
+        <translation type="vanished">Автозапуск</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="566"/>
         <source>Switch CPU / PPU</source>
-        <translation type="unfinished">Переключить ЦП / ПП</translation>
+        <translation type="obsolete">Переключить ЦП / ПП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="571"/>
         <source>Clear Console Log</source>
-        <translation type="unfinished">Очистить консоль отладчика</translation>
+        <translation type="obsolete">Очистить консоль отладчика</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="576"/>
         <source>Remove All Breakpoints</source>
-        <translation type="unfinished">Удалить все точки останова</translation>
+        <translation type="obsolete">Удалить все точки останова</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="584"/>
         <source>Sound AY on PPU</source>
-        <translation type="unfinished">Звук AY на ПП</translation>
+        <translation type="obsolete">Звук AY на ПП</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="589"/>
-        <source>English</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="594"/>
         <source>Russian</source>
-        <translation>Русский</translation>
+        <translation type="vanished">Русский</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="33"/>

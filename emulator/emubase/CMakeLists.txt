@@ -16,7 +16,6 @@ set(EMUBASE_SOURCES
 )
 
 set(EMUBASE_HEADERS
-    stdafx.h
     Board.h
     Defines.h
     Emubase.h
@@ -29,4 +28,4 @@ add_library(emubase STATIC
     ${EMUBASE_HEADERS}
 )
 
-target_compile_definitions(emubase PRIVATE EMUBASE_LIBRARY)
+include_directories(${util_SOURCE_DIR})

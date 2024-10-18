@@ -1,4 +1,4 @@
-﻿// Common.h
+// Common.h
 
 #pragma once
 
@@ -78,17 +78,11 @@ bool AlertOkCancel(const QString &sMessage);
 //////////////////////////////////////////////////////////////////////
 // DebugPrint
 
-void DebugPrint(const char* message);
-void DebugPrintFormat(const char* pszFormat, ...);
-void DebugLog(const char* message);
-void DebugLogFormat(const char* pszFormat, ...);
-
+void DebugPrintProc(const char* message);
+void DebugLogProc(const char* message);
 
 //////////////////////////////////////////////////////////////////////
 
-
-// Processor register names
-const LPCTSTR REGISTER_NAME[] = { "R0", "R1", "R2", "R3", "R4", "R5", "SP", "PC" };
 
 const int UKNC_SCREEN_WIDTH = 640;
 const int UKNC_SCREEN_HEIGHT = 288;

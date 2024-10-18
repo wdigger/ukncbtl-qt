@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
     UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -10,11 +10,15 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 /// \file Memory.cpp  Memory controller classes implementation
 
-#include "stdafx.h"
 #include "Memory.h"
 #include "Board.h"
 #include "Processor.h"
 
+#include <cstring>
+
+#ifndef MAKEWORD
+#define MAKEWORD(a, b)      ((uint16_t)(((uint8_t)(((uint32_t)(a)) & 0xff)) | ((uint16_t)((uint8_t)(((uint32_t)(b)) & 0xff))) << 8))
+#endif  // MAKEWORD
 
 //////////////////////////////////////////////////////////////////////
 
@@ -117,7 +121,7 @@ uint16_t CMemoryController::GetWordView(uint16_t address, bool okHaltMode, bool 
         return 0;
     }
 
-    ASSERT(false);  // If we are here - then addrtype has invalid value
+    assert(false);  // If we are here - then addrtype has invalid value
     return 0;
 }
 
@@ -153,7 +157,7 @@ uint16_t CMemoryController::GetWord(uint16_t address, bool okHaltMode, bool okEx
         return 0;
     }
 
-    ASSERT(false);  // If we are here - then addrtype has invalid value
+    assert(false);  // If we are here - then addrtype has invalid value
     return 0;
 }
 
@@ -190,7 +194,7 @@ uint8_t CMemoryController::GetByte(uint16_t address, bool okHaltMode)
         return 0;
     }
 
-    ASSERT(false);  // If we are here - then addrtype has invalid value
+    assert(false);  // If we are here - then addrtype has invalid value
     return 0;
 }
 
@@ -228,7 +232,7 @@ void CMemoryController::SetWord(uint16_t address, bool okHaltMode, uint16_t word
         return;
     }
 
-    ASSERT(false);  // If we are here - then addrtype has invalid value
+    assert(false);  // If we are here - then addrtype has invalid value
 }
 
 void CMemoryController::SetByte(uint16_t address, bool okHaltMode, uint8_t byte)
@@ -267,7 +271,7 @@ void CMemoryController::SetByte(uint16_t address, bool okHaltMode, uint8_t byte)
         return;
     }
 
-    ASSERT(false);  // If we are here - then addrtype has invalid value
+    assert(false);  // If we are here - then addrtype has invalid value
 }
 
 

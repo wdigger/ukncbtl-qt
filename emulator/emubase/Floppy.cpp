@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
     UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -12,10 +12,12 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 /// \brief Floppy controller and drives emulation
 /// \details See defines in header file Emubase.h
 
-#include "stdafx.h"
-#include <sys/stat.h>
 #include "Emubase.h"
+#include "Debug.h"
 
+#include <sys/stat.h>
+#include <cstring>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////
 
@@ -72,7 +74,7 @@ CFloppyController::~CFloppyController()
 
 void CFloppyController::Reset()
 {
-    if (m_okTrace) DebugLog(_T("Floppy RESET\r\n"));
+    if (m_okTrace) DebugLog("Floppy RESET\r\n");
 
     FlushChanges();
 
@@ -88,9 +90,9 @@ void CFloppyController::Reset()
     PrepareTrack();
 }
 
-bool CFloppyController::AttachImage(int drive, LPCTSTR sFileName)
+bool CFloppyController::AttachImage(int drive, const char* sFileName)
 {
-    ASSERT(sFileName != nullptr);
+    assert(sFileName != nullptr);
 
     // If image attached - detach one first
     if (m_drivedata[drive].fpFile != nullptr)
@@ -98,8 +100,8 @@ bool CFloppyController::AttachImage(int drive, LPCTSTR sFileName)
 
     // Detect if this is a .dsk image or .rtd image, using the file extension
     m_drivedata[drive].okNetRT11Image = false;
-    LPCTSTR sFileNameExt = _tcsrchr(sFileName, _T('.'));
-    if (sFileNameExt != nullptr && _tcsicmp(sFileNameExt, _T(".rtd")) == 0)
+    const char* sFileNameExt = strrchr(sFileName, '.');
+    if (sFileNameExt != nullptr && strcasecmp(sFileNameExt, ".rtd") == 0)
         m_drivedata[drive].okNetRT11Image = true;
 
     // Open file
@@ -169,7 +171,7 @@ uint16_t CFloppyController::GetState()
 
 void CFloppyController::SetCommand(uint16_t cmd)
 {
-    if (m_okTrace) DebugLogFormat(_T("Floppy COMMAND %06o\r\n"), cmd);
+    if (m_okTrace) DebugLog("Floppy COMMAND %06o\r\n", cmd);
 
     bool okPrepareTrack = false;  // Is it needed to load the track into the buffer
 
@@ -179,7 +181,7 @@ void CFloppyController::SetCommand(uint16_t cmd)
     {
         FlushChanges();
 
-        DebugLogFormat(_T("Floppy DRIVE %hu\r\n"), newdrive);
+        DebugLog("Floppy DRIVE %hu\r\n", newdrive);
 
         m_drive = newdrive;
         m_pDrive = m_drivedata + m_drive;
@@ -203,7 +205,7 @@ void CFloppyController::SetCommand(uint16_t cmd)
 
     if (cmd & FLOPPY_CMD_STEP)  // Move head for one track to center or from center
     {
-        if (m_okTrace) DebugLog(_T("Floppy STEP\r\n"));
+        if (m_okTrace) DebugLog("Floppy STEP\r\n");
 
         m_side = (m_flags & FLOPPY_CMD_SIDEUP) ? 1 : 0; // DO WE NEED IT HERE?
 
@@ -244,7 +246,7 @@ void CFloppyController::SetCommand(uint16_t cmd)
 
 uint16_t CFloppyController::GetData()
 {
-    if (m_okTrace) DebugLogFormat(_T("Floppy READ\t\t%04x\r\n"), m_datareg);
+    if (m_okTrace) DebugLog("Floppy READ\t\t%04x\r\n", m_datareg);
 
     m_status &= ~FLOPPY_STATUS_MOREDATA;
     m_writing = m_searchsync = false;
@@ -379,7 +381,7 @@ void CFloppyController::PrepareTrack()
 {
     FlushChanges();
 
-    if (m_okTrace) DebugLogFormat(_T("Floppy PREP  %hu TR %hu SD %hu\r\n"), m_drive, m_track, m_side);
+    if (m_okTrace) DebugLog("Floppy PREP  %hu TR %hu SD %hu\r\n", m_drive, m_track, m_side);
 
     //TCHAR buffer[512];
 
@@ -426,7 +428,7 @@ void CFloppyController::FlushChanges()
     if (!IsAttached(m_drive)) return;
     if (!m_trackchanged) return;
 
-    if (m_okTrace) DebugLogFormat(_T("Floppy FLUSH %hu TR %hu SD %hu\r\n"), m_drive, m_pDrive->datatrack, m_pDrive->dataside);
+    if (m_okTrace) DebugLog("Floppy FLUSH %hu TR %hu SD %hu\r\n", m_drive, m_pDrive->datatrack, m_pDrive->dataside);
 
     // Decode track data from m_data
     uint8_t data[5120];  memset(data, 0, 5120);
@@ -458,7 +460,7 @@ void CFloppyController::FlushChanges()
     }
     else
     {
-        if (m_okTrace) DebugLog(_T("Floppy FLUSH FAILED\r\n"));
+        if (m_okTrace) DebugLog("Floppy FLUSH FAILED\r\n");
     }
 
     m_trackchanged = false;

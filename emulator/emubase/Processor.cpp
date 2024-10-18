@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
     UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -10,12 +10,15 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 /// \file Processor.cpp  KM1801VM2 processor class implementation
 
-#include "stdafx.h"
 #include "Processor.h"
 #include "Emubase.h"
+#include "Debug.h"
+
+#include <cassert>
+#include <cstring>
 
 // Processor register names
-const LPCTSTR REGISTER_NAME[] = { "R0", "R1", "R2", "R3", "R4", "R5", "SP", "PC" };
+const char* REGISTER_NAME[] = { "R0", "R1", "R2", "R3", "R4", "R5", "SP", "PC" };
 
 // Timings ///////////////////////////////////////////////////////////
 
@@ -141,7 +144,7 @@ CProcessor::ExecuteMethodRef* CProcessor::m_pExecuteMethodMap = nullptr;
 
 void CProcessor::Init()
 {
-    ASSERT(m_pExecuteMethodMap == nullptr);
+    assert(m_pExecuteMethodMap == nullptr);
     m_pExecuteMethodMap = static_cast<CProcessor::ExecuteMethodRef*>(::calloc(65536, sizeof(CProcessor::ExecuteMethodRef)));
 
     // Сначала заполняем таблицу ссылками на метод ExecuteUNKNOWN, выполняющий TRAP 10
@@ -260,9 +263,9 @@ void CProcessor::Done()
 //////////////////////////////////////////////////////////////////////
 
 
-CProcessor::CProcessor (LPCTSTR name)
+CProcessor::CProcessor (const char* name)
 {
-    _tcscpy(m_name, name);
+    strcpy(m_name, name);
     memset(m_R, 0, sizeof(m_R));
     m_psw = m_savepsw = 0777;
     m_savepc = 0177777;
@@ -555,14 +558,14 @@ static void TraceInstruction(CProcessor* pProc, uint16_t address)
     memory[2] = pMemCtl->GetWordView(address + 2 * 2, okHaltMode, true, &addrtype);
     memory[3] = pMemCtl->GetWordView(address + 3 * 2, okHaltMode, true, &addrtype);
 
-    TCHAR bufaddr[7];
+    char bufaddr[7];
     PrintOctalValue(bufaddr, address);
 
-    TCHAR instr[8];
-    TCHAR args[32];
+    char instr[8];
+    char args[32];
     DisassembleInstruction(memory, address, instr, args);
-    TCHAR buffer[64];
-    _sntprintf(buffer, sizeof(buffer) / sizeof(TCHAR) - 1, _T("%s\t%s\t%s\t%s\r\n"), pProc->GetName(), bufaddr, instr, args);
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer) / sizeof(char) - 1, "%s\t%s\t%s\t%s\r\n", pProc->GetName(), bufaddr, instr, args);
 
     DebugLog(buffer);
 }
@@ -572,7 +575,7 @@ void CProcessor::FetchInstruction()
 {
     // Считываем очередную инструкцию
     uint16_t pc = GetPC();
-    ASSERT((pc & 1) == 0); // it have to be word aligned
+    assert((pc & 1) == 0); // it have to be word aligned
 
     m_instruction = GetWordExec(pc);
     SetPC(GetPC() + 2);

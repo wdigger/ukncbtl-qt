@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
     UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -16,7 +16,7 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 #include "Memory.h"
 
 // Processor register names
-extern const LPCTSTR REGISTER_NAME[];
+extern const char* REGISTER_NAME[];
 
 class CMemoryController;
 
@@ -26,7 +26,7 @@ class CMemoryController;
 class CProcessor
 {
 public:  // Constructor / initialization
-    CProcessor(LPCTSTR name);
+    CProcessor(const char* name);
     /// \brief Link the processor and memory controller
     void        AttachMemoryController(CMemoryController* ctl) { m_pMemoryController = ctl; }
     void        SetHALTPin(bool value) { m_haltpin = value; }
@@ -34,7 +34,7 @@ public:  // Constructor / initialization
     void        SetACLOPin(bool value);
     void        MemoryError();
     /// \brief Get the processor name, assigned in the constructor
-    LPCTSTR     GetName() const { return m_name; }
+    const char* GetName() const { return m_name; }
 
 public:
     static void Init();  ///< Initialize static tables
@@ -44,7 +44,7 @@ protected:  // Statics
     static ExecuteMethodRef* m_pExecuteMethodMap;
 
 protected:  // Processor state
-    TCHAR       m_name[5];          ///< Processor name (DO NOT use it inside the processor code!!!)
+    char        m_name[5];          ///< Processor name (DO NOT use it inside the processor code!!!)
     uint16_t    m_internalTick;     ///< How many ticks waiting to the end of current instruction
     uint16_t    m_psw;              ///< Processor Status Word (PSW)
     uint16_t    m_R[8];             ///< Registers (R0..R5, R6=SP, R7=PC)

@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
     UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -12,10 +12,11 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 /// \brief Hard disk drive emulation.
 /// \details See defines in header file Emubase.h
 
-#include "stdafx.h"
-#include <sys/stat.h>
 #include "Emubase.h"
 
+#include <sys/stat.h>
+#include <cstring>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////
 // Constants
@@ -109,24 +110,24 @@ void CHardDrive::Reset()
     m_timeoutevent = TIMEEVT_RESET_DONE;
 }
 
-bool CHardDrive::AttachImage(LPCTSTR sFileName)
+bool CHardDrive::AttachImage(const char* sFileName)
 {
-    ASSERT(sFileName != nullptr);
+    assert(sFileName != nullptr);
 
     // Open file
     m_okReadOnly = false;
-    m_fpFile = ::_tfopen(sFileName, _T("r+b"));
+    m_fpFile = ::fopen(sFileName, "r+b");
     if (m_fpFile == nullptr)
     {
         m_okReadOnly = true;
-        m_fpFile = ::_tfopen(sFileName, _T("rb"));
+        m_fpFile = ::fopen(sFileName, "rb");
     }
     if (m_fpFile == nullptr)
         return false;
 
     // Check file size
     ::fseek(m_fpFile, 0, SEEK_END);
-    uint32_t dwFileSize = ::ftell(m_fpFile);
+    long dwFileSize = ::ftell(m_fpFile);
     ::fseek(m_fpFile, 0, SEEK_SET);
     if (dwFileSize % 512 != 0)
         return false;
@@ -199,7 +200,7 @@ void CHardDrive::DetachImage()
 
 uint16_t CHardDrive::ReadPort(uint16_t port)
 {
-    ASSERT(port >= 0x1F0 && port <= 0x1F7);
+    assert(port >= 0x1F0 && port <= 0x1F7);
 
     uint16_t data = 0;
     switch (port)
@@ -252,7 +253,7 @@ uint16_t CHardDrive::ReadPort(uint16_t port)
 
 void CHardDrive::WritePort(uint16_t port, uint16_t data)
 {
-    ASSERT(port >= 0x1F0 && port <= 0x1F7);
+    assert(port >= 0x1F0 && port <= 0x1F7);
 
 //    DebugPrintFormat(_T("HDD Write %x <-- 0x%04x\r\n"), port, data);
 

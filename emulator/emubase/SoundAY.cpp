@@ -1,4 +1,4 @@
-﻿/*  This file is part of UKNCBTL.
+/*  This file is part of UKNCBTL.
 UKNCBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
@@ -14,8 +14,9 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 // Based on various code snippets by Ville Hallik, Michael Cuddy,
 // Tatsuyuki Satoh, Fabrice Frances, Nicola Salmoria.
 
-#include "stdafx.h"
 #include "Emubase.h"
+
+#include <cstring>
 
 #define MAX_OUTPUT 0x0ffff
 
