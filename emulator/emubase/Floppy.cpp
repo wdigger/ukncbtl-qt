@@ -32,8 +32,51 @@ static bool DecodeTrackData(const uint8_t* pRaw, uint8_t* pDest);
 
 //////////////////////////////////////////////////////////////////////
 
+/// \brief Floppy drive (one of four drives in the floppy controller)
+/// \sa CFloppyController
+class CFloppyDriveImage: public CFloppyDrive
+{
+protected:
+    FILE* fpFile;       ///< File pointer of the disk image file
+    bool okNetRT11Image;  ///< true - .rtd image, false - .dsk image
+    bool okReadOnly;    ///< Write protection flag
+    uint16_t dataptr;       ///< Data offset within m_data - "head" position
+    uint16_t datatrack;     ///< Track number of data in m_data array
+    uint16_t dataside;      ///< Disk side of data in m_data array
+    uint8_t data[FLOPPY_RAWTRACKSIZE];  ///< Raw track image for the current track
+    uint8_t marker[FLOPPY_RAWMARKERSIZE];  ///< Marker positions
+    
+public:
+    CFloppyDriveImage();
+    
+    virtual void Reset();       ///< Reset the device
+    virtual void Step();
+    virtual uint16_t Read();
+    virtual void Write(uint16_t word);
+    virtual void SetMarker();
+    virtual void RemoveMarker();
+    virtual bool ReadTrack(uint16_t track, uint16_t side);
+    virtual bool WriteTrack();
+    
+    /// \brief Attach the image to the drive -- insert disk
+    virtual bool AttachImage(const char *sFileName);
+    /// \brief Detach image from the drive -- remove disk
+    virtual void DetachImage();
+    /// \brief Check if the drive has an image attached
+    virtual bool IsAttached() const { return fpFile != nullptr; }
+    /// \brief Check if the drive's attached image is read-only
+    virtual bool IsReadOnly() const { return okReadOnly; }
+    
+    virtual bool IsInIndex() const { return dataptr < FLOPPY_INDEXLENGTH; }
+    
+    virtual bool HasMarker() const { return marker[dataptr / 2] != 0; }
+    
+    virtual uint16_t GetTrack() const { return datatrack; }
+    
+    virtual uint16_t GetSide() const { return dataside; }
+};
 
-CFloppyDrive::CFloppyDrive()
+CFloppyDriveImage::CFloppyDriveImage()
 {
     fpFile = nullptr;
     okNetRT11Image = false;
@@ -45,14 +88,14 @@ CFloppyDrive::CFloppyDrive()
     memset(marker, 0, FLOPPY_RAWMARKERSIZE);
 }
 
-void CFloppyDrive::Reset()
+void CFloppyDriveImage::Reset()
 {
     datatrack = 0;
     dataside = 0;
     dataptr = 0;
 }
 
-bool CFloppyDrive::AttachImage(const char *sFileName)
+bool CFloppyDriveImage::AttachImage(const char *sFileName)
 {
     // If image attached - detach one first
     if (IsAttached())
@@ -82,7 +125,7 @@ bool CFloppyDrive::AttachImage(const char *sFileName)
     return true;
 }
 
-void CFloppyDrive::DetachImage()
+void CFloppyDriveImage::DetachImage()
 {
     if (fpFile != nullptr)
     {
@@ -94,35 +137,35 @@ void CFloppyDrive::DetachImage()
     Reset();
 }
 
-void CFloppyDrive::Step()
+void CFloppyDriveImage::Step()
 {
     dataptr += 2;
     if (dataptr >= FLOPPY_RAWTRACKSIZE)
         dataptr = 0;
 }
 
-uint16_t CFloppyDrive::Read()
+uint16_t CFloppyDriveImage::Read()
 {
     return (data[dataptr] << 8) | data[dataptr + 1];
 }
 
-void CFloppyDrive::Write(uint16_t word)
+void CFloppyDriveImage::Write(uint16_t word)
 {
     data[dataptr] = (uint8_t)(word & 0xff);
     data[dataptr + 1] = (uint8_t)((word >> 8) & 0xff);
 }
 
-void CFloppyDrive::SetMarker()
+void CFloppyDriveImage::SetMarker()
 {
     marker[dataptr / 2] = 1;
 }
 
-void CFloppyDrive::RemoveMarker()
+void CFloppyDriveImage::RemoveMarker()
 {
     marker[dataptr / 2] = 0;
 }
 
-bool CFloppyDrive::ReadTrack(uint16_t track, uint16_t side)
+bool CFloppyDriveImage::ReadTrack(uint16_t track, uint16_t side)
 {
     datatrack = track;
     dataside = side;
@@ -160,7 +203,7 @@ bool CFloppyDrive::ReadTrack(uint16_t track, uint16_t side)
     return true;
 }
 
-bool CFloppyDrive::WriteTrack()
+bool CFloppyDriveImage::WriteTrack()
 {
     uint8_t data[5120] = {0};
 
@@ -197,8 +240,12 @@ bool CFloppyDrive::WriteTrack()
 
 CFloppyController::CFloppyController()
 {
+    for (int i = 0; i < sizeof(m_drivedata) / sizeof(m_drivedata[0]); i++)
+    {
+        m_drivedata[i] = new CFloppyDriveImage();
+    }
     m_drive = m_side = m_track = 0;
-    m_pDrive = m_drivedata;
+    m_pDrive = m_drivedata[0];
     m_datareg = m_writereg = m_shiftreg = 0;
     m_writing = m_searchsync = m_writemarker = m_crccalculus = false;
     m_writeflag = m_shiftflag = m_shiftmarker = false;
@@ -221,7 +268,7 @@ void CFloppyController::Reset()
     FlushChanges();
 
     m_drive = m_side = m_track = 0;
-    m_pDrive = m_drivedata;
+    m_pDrive = m_drivedata[0];
     m_datareg = m_writereg = m_shiftreg = 0;
     m_writing = m_searchsync = m_writemarker = m_crccalculus = false;
     m_writeflag = m_shiftflag = false;
@@ -237,7 +284,7 @@ bool CFloppyController::AttachImage(unsigned int drive, const char *sFileName)
     assert(sFileName != nullptr);
 
     // If image attached - detach one first
-    if (!m_drivedata[drive].AttachImage(sFileName))
+    if (!m_drivedata[drive]->AttachImage(sFileName))
         return false;
 
     m_side = m_track = 0;
@@ -255,11 +302,11 @@ bool CFloppyController::AttachImage(unsigned int drive, const char *sFileName)
 
 void CFloppyController::DetachImage(unsigned int drive)
 {
-    if (!m_drivedata[drive].IsAttached()) return;
+    if (!m_drivedata[drive]->IsAttached()) return;
 
     FlushChanges();
 
-    m_drivedata[drive].DetachImage();
+    m_drivedata[drive]->DetachImage();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -278,7 +325,7 @@ uint16_t CFloppyController::GetState(void)
 
     uint16_t res = m_status;
 
-    if (!m_drivedata[m_drive].IsAttached())
+    if (!m_drivedata[m_drive]->IsAttached())
         res |= FLOPPY_STATUS_MOREDATA;
 
 //    if (res & FLOPPY_STATUS_MOREDATA)
@@ -305,7 +352,7 @@ void CFloppyController::SetCommand(uint16_t cmd)
         DebugLog("Floppy DRIVE %hu\r\n", newdrive);
 
         m_drive = newdrive;
-        m_pDrive = m_drivedata + m_drive;
+        m_pDrive = m_drivedata[m_drive];
         okPrepareTrack = true;
     }
     cmd &= ~3;  // Remove the info about the current drive
@@ -414,7 +461,7 @@ void CFloppyController::Periodic()
 
     // Rotating all the disks at once
     for (int drive = 0; drive < 4; drive++)
-        m_drivedata[drive].Step();
+        m_drivedata[drive]->Step();
 
     // Then process reading/writing on the current drive
     if (!IsAttached(m_drive)) return;

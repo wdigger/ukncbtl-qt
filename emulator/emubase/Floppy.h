@@ -44,45 +44,34 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 /// \brief Floppy drive (one of four drives in the floppy controller)
 /// \sa CFloppyController
-struct CFloppyDrive
+class CFloppyDrive
 {
-protected:
-    FILE* fpFile;       ///< File pointer of the disk image file
-    bool okNetRT11Image;  ///< true - .rtd image, false - .dsk image
-    bool okReadOnly;    ///< Write protection flag
-    uint16_t dataptr;       ///< Data offset within m_data - "head" position
-    uint16_t datatrack;     ///< Track number of data in m_data array
-    uint16_t dataside;      ///< Disk side of data in m_data array
-    uint8_t data[FLOPPY_RAWTRACKSIZE];  ///< Raw track image for the current track
-    uint8_t marker[FLOPPY_RAWMARKERSIZE];  ///< Marker positions
-
 public:
-    CFloppyDrive();
-    void Reset();       ///< Reset the device
-    void Step();
-    uint16_t Read();
-    void Write(uint16_t word);
-    void SetMarker();
-    void RemoveMarker();
-    bool ReadTrack(uint16_t track, uint16_t side);
-    bool WriteTrack();
-
+    virtual void Reset() = 0;       ///< Reset the device
+    virtual void Step() = 0;
+    virtual uint16_t Read() = 0;
+    virtual void Write(uint16_t word) = 0;
+    virtual void SetMarker() = 0;
+    virtual void RemoveMarker() = 0;
+    virtual bool ReadTrack(uint16_t track, uint16_t side) = 0;
+    virtual bool WriteTrack() = 0;
+    
     /// \brief Attach the image to the drive -- insert disk
-    bool AttachImage(const char *sFileName);
+    virtual bool AttachImage(const char *sFileName) = 0;
     /// \brief Detach image from the drive -- remove disk
-    void DetachImage();
+    virtual void DetachImage() = 0;
     /// \brief Check if the drive has an image attached
-    bool IsAttached() const { return fpFile != nullptr; }
+    virtual bool IsAttached() const = 0;
     /// \brief Check if the drive's attached image is read-only
-    bool IsReadOnly() const { return okReadOnly; }
-
-    bool IsInIndex() const { return dataptr < FLOPPY_INDEXLENGTH; }
-
-    bool HasMarker() const { return marker[dataptr / 2] != 0; }
-
-    uint16_t GetTrack() const { return datatrack; }
-
-    uint16_t GetSide() const { return dataside; }
+    virtual bool IsReadOnly() const = 0;
+    
+    virtual bool IsInIndex() const = 0;
+    
+    virtual bool HasMarker() const = 0;
+    
+    virtual uint16_t GetTrack() const = 0;
+    
+    virtual uint16_t GetSide() const = 0;
 };
 
 /// \brief UKNC floppy controller (MZ standard)
@@ -90,7 +79,7 @@ public:
 class CFloppyController
 {
 protected:
-    CFloppyDrive m_drivedata[4];  ///< Floppy drives
+    CFloppyDrive* m_drivedata[4];  ///< Floppy drives
     CFloppyDrive* m_pDrive;  ///< Current drive
     uint16_t m_drive;       ///< Current drive number: from 0 to 3
     uint16_t m_track;       ///< Track number: from 0 to 79
@@ -121,9 +110,9 @@ public:
     /// \brief Detach image from the drive -- remove disk
     void DetachImage(unsigned int drive);
     /// \brief Check if the drive has an image attached
-    bool IsAttached(unsigned int drive) const { return m_drivedata[drive].IsAttached(); }
+    bool IsAttached(unsigned int drive) const { return m_drivedata[drive]->IsAttached(); }
     /// \brief Check if the drive's attached image is read-only
-    bool IsReadOnly(unsigned int drive) const { return m_drivedata[drive].IsReadOnly(); }
+    bool IsReadOnly(unsigned int drive) const { return m_drivedata[drive]->IsReadOnly(); }
     /// \brief Check if floppy engine now rotates
     bool IsEngineOn() const { return (m_flags & FLOPPY_CMD_ENGINESTART) != 0; }
     uint16_t GetData(void);         ///< Reading port 177132 -- data
