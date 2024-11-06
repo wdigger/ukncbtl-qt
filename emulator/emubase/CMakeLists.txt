@@ -22,6 +22,7 @@ set(EMUBASE_HEADERS
     Emubase.h
     Memory.h
     Processor.h
+    Hard.h
 )
 
 add_library(emubase STATIC

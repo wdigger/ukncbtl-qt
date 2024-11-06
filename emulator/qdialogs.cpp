@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "qdialogs.h"
 #include <QMessageBox>
 
@@ -7,7 +7,7 @@
 
 
 QInputOctalDialog::QInputOctalDialog(QWidget *parent, const QString & title, quint16 * value)
-    : QDialog(parent, nullptr)
+    : QDialog(parent)
 {
     m_result = value;
 

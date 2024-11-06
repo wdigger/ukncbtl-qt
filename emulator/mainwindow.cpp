@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include <QAction>
 #include <QClipboard>
 #include <QDateTime>
@@ -620,7 +620,8 @@ bool MainWindow::attachCartridge(int slot, const QString & strFileName)
     QFileInfo fi(strFileName);
     QString strFullName(fi.canonicalFilePath());  // Get absolute file name
 
-    LPCTSTR sFileName = qPrintable(strFullName);
+    QByteArray strArray = strFullName.toLocal8Bit();
+    const char *sFileName = strArray.constData();
     Emulator_LoadROMCartridge(slot, sFileName);
     //TODO: Check result
 
@@ -730,7 +731,8 @@ bool MainWindow::attachHardDrive(int slot, const QString & strFileName)
     QFileInfo fi(strFileName);
     QString strFullName(fi.canonicalFilePath());  // Get absolute file name
 
-    LPCTSTR sFileName = qPrintable(strFullName);
+    QByteArray array = strFullName.toUtf8();
+    const char *sFileName = array.constData();
     if (!g_pBoard->AttachHardImage(slot, sFileName))
         return false;
 

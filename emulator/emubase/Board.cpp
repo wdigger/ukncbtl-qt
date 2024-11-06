@@ -13,6 +13,7 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 #include "Emubase.h"
 #include "Floppy.h"
 #include "Board.h"
+#include "Hard.h"
 
 #include <cstring>
 #include <cassert>
@@ -427,7 +428,7 @@ bool CMotherboard::AttachHardImage(int slot, const char* sFileName)
 {
     assert(slot >= 1 && slot <= 2);
 
-    m_pHardDrives[slot - 1] = new CHardDrive();
+    m_pHardDrives[slot - 1] = ProduceHardDriveImage();
     bool success = m_pHardDrives[slot - 1]->AttachImage(sFileName);
     if (success)
     {

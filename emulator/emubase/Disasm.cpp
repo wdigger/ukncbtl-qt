@@ -403,8 +403,8 @@ bool Disasm_CheckForJump(const uint16_t* memory, int* pDelta)
 
     // BR, BNE, BEQ, BGE, BLT, BGT, BLE
     // BPL, BMI, BHI, BLOS, BVC, BVS, BHIS, BLO
-    if ((instr & 0177400) >= 0000400 && (instr & 0177400) < 0004000 ||
-        (instr & 0177400) >= 0100000 && (instr & 0177400) < 0104000)
+    if (((instr & 0177400) >= 0000400 && (instr & 0177400) < 0004000) ||
+        ((instr & 0177400) >= 0100000 && (instr & 0177400) < 0104000))
     {
         *pDelta = ((int)(char)(instr & 0xff)) + 1;
         return true;

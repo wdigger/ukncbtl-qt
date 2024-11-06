@@ -12,7 +12,9 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 /// \brief Hard disk drive emulation.
 /// \details See defines in header file Emubase.h
 
-#include "Emubase.h"
+#include "Hard.h"
+
+#include <cstdio>
 
 #include <sys/stat.h>
 #include <cstring>
@@ -75,8 +77,64 @@ static void InvertBuffer(void* buffer)
 
 //////////////////////////////////////////////////////////////////////
 
+/// \brief UKNC IDE hard drive
+class CHardDriveImage: public CHardDrive
+{
+protected:
+    FILE*   m_fpFile;           ///< File pointer for the attached HDD image
+    bool    m_okReadOnly;       ///< Flag indicating that the HDD image file is read-only
+    bool    m_okInverted;       ///< Flag indicating that the HDD image has inverted bits
+    uint8_t m_status;           ///< IDE status register, see IDE_STATUS_XXX constants
+    uint8_t m_error;            ///< IDE error register, see IDE_ERROR_XXX constants
+    uint8_t m_command;          ///< Current IDE command, see IDE_COMMAND_XXX constants
+    int     m_numcylinders;     ///< Cylinder count
+    int     m_numheads;         ///< Head count
+    int     m_numsectors;       ///< Sectors per track
+    int     m_curcylinder;      ///< Current cylinder number
+    int     m_curhead;          ///< Current head number
+    int     m_cursector;        ///< Current sector number
+    int     m_curheadreg;       ///< Current head number
+    int     m_sectorcount;      ///< Sector counter for read/write operations
+    uint8_t m_buffer[IDE_DISK_SECTOR_SIZE];  ///< Sector data buffer
+    int     m_bufferoffset;     ///< Current offset within sector: 0..511
+    int     m_timeoutcount;     ///< Timeout counter to wait for the next event
+    int     m_timeoutevent;     ///< Current stage of operation, see TimeoutEvent enum
+    
+public:
+    CHardDriveImage();
+    ~CHardDriveImage();
+    /// \brief Reset the device.
+    void Reset();
+    /// \brief Attach HDD image file to the device
+    bool AttachImage(const char* sFileName);
+    /// \brief Detach HDD image file from the device
+    void DetachImage();
+    /// \brief Check if the attached hard drive image is read-only
+    bool IsReadOnly() const { return m_okReadOnly; }
+    
+public:
+    /// \brief Read word from the device port
+    uint16_t ReadPort(uint16_t port);
+    /// \brief Write word th the device port
+    void WritePort(uint16_t port, uint16_t data);
+    /// \brief Rotate disk
+    void Periodic();
+    
+private:
+    uint32_t CalculateOffset() const;  ///< Calculate sector offset in the HDD image
+    void HandleCommand(uint8_t command);  ///< Handle the IDE command
+    void ReadNextSector();
+    void ReadSectorDone();
+    void WriteSectorDone();
+    void NextSector();          ///< Advance to the next sector, CHS-based
+    void ContinueRead();
+    void ContinueWrite();
+    void IdentifyDrive();       ///< Prepare m_buffer for the IDENTIFY DRIVE command
+};
 
-CHardDrive::CHardDrive()
+//////////////////////////////////////////////////////////////////////
+
+CHardDriveImage::CHardDriveImage()
 {
     m_fpFile = nullptr;
 
@@ -94,12 +152,12 @@ CHardDrive::CHardDrive()
     m_okReadOnly = false;
 }
 
-CHardDrive::~CHardDrive()
+CHardDriveImage::~CHardDriveImage()
 {
     DetachImage();
 }
 
-void CHardDrive::Reset()
+void CHardDriveImage::Reset()
 {
     //DebugLog(_T("HDD Reset\r\n"));
 
@@ -110,37 +168,54 @@ void CHardDrive::Reset()
     m_timeoutevent = TIMEEVT_RESET_DONE;
 }
 
-bool CHardDrive::AttachImage(const char* sFileName)
+long fsize(FILE* stream)
+{
+    long position = ::ftell(stream);
+    if (::fseek(stream, 0, SEEK_END) != 0)
+        return -1;
+    long size = ::ftell(stream);
+    if (::fseek(stream, position, SEEK_SET) != 0)
+        return -1;
+    return size;
+}
+
+FILE *fopenrb(const char *filename, bool *readonly)
+{
+    if (readonly != nullptr)
+        *readonly = false;
+    FILE *file = ::fopen(filename, "r+b");
+    if (file != nullptr)
+    {
+        return file;
+    }
+    file = ::fopen(filename, "rb");
+    if ((file != nullptr) && (readonly != nullptr))
+        *readonly = true;
+    return file;
+}
+
+bool CHardDriveImage::AttachImage(const char* sFileName)
 {
     assert(sFileName != nullptr);
 
     // Open file
-    m_okReadOnly = false;
-    m_fpFile = ::fopen(sFileName, "r+b");
-    if (m_fpFile == nullptr)
-    {
-        m_okReadOnly = true;
-        m_fpFile = ::fopen(sFileName, "rb");
-    }
+    m_fpFile = fopenrb(sFileName, &m_okReadOnly);
     if (m_fpFile == nullptr)
         return false;
 
     // Check file size
-    ::fseek(m_fpFile, 0, SEEK_END);
-    long dwFileSize = ::ftell(m_fpFile);
-    ::fseek(m_fpFile, 0, SEEK_SET);
-    if (dwFileSize % 512 != 0)
+    int dwFileSize = (int)fsize(m_fpFile);
+    if ((dwFileSize < 0) || (dwFileSize % 512 != 0))
         return false;
 
     // Read first sector
-    size_t dwBytesRead = ::fread(m_buffer, 1, 512, m_fpFile);
-    if (dwBytesRead != 512)
+    if (1 != ::fread(m_buffer, 512, 1, m_fpFile))
         return false;
 
     // Detect hard disk type
     const uint16_t * pwHardBuffer = (const uint16_t*)m_buffer;
-    if (pwHardBuffer[0] == 0x54A9 && pwHardBuffer[1] == 0xFFEF && pwHardBuffer[2] == 0xFEFF ||
-        pwHardBuffer[0] == 0xAB56 && pwHardBuffer[1] == 0x0010 && pwHardBuffer[2] == 0x0100)  // HD type
+    if ((pwHardBuffer[0] == 0x54A9 && pwHardBuffer[1] == 0xFFEF && pwHardBuffer[2] == 0xFEFF) ||
+        (pwHardBuffer[0] == 0xAB56 && pwHardBuffer[1] == 0x0010 && pwHardBuffer[2] == 0x0100))  // HD type
     {
         // Autodetect inverted image
         m_okInverted = (pwHardBuffer[0] == 0xAB56);
@@ -188,7 +263,7 @@ bool CHardDrive::AttachImage(const char* sFileName)
     return true;
 }
 
-void CHardDrive::DetachImage()
+void CHardDriveImage::DetachImage()
 {
     if (m_fpFile == nullptr) return;
 
@@ -198,7 +273,7 @@ void CHardDrive::DetachImage()
     m_fpFile = nullptr;
 }
 
-uint16_t CHardDrive::ReadPort(uint16_t port)
+uint16_t CHardDriveImage::ReadPort(uint16_t port)
 {
     assert(port >= 0x1F0 && port <= 0x1F7);
 
@@ -251,7 +326,7 @@ uint16_t CHardDrive::ReadPort(uint16_t port)
     return data;
 }
 
-void CHardDrive::WritePort(uint16_t port, uint16_t data)
+void CHardDriveImage::WritePort(uint16_t port, uint16_t data)
 {
     assert(port >= 0x1F0 && port <= 0x1F7);
 
@@ -310,7 +385,7 @@ void CHardDrive::WritePort(uint16_t port, uint16_t data)
 }
 
 // Called from CMotherboard::SystemFrame() every tick
-void CHardDrive::Periodic()
+void CHardDriveImage::Periodic()
 {
     if (m_timeoutcount > 0)
     {
@@ -336,7 +411,7 @@ void CHardDrive::Periodic()
     }
 }
 
-void CHardDrive::HandleCommand(uint8_t command)
+void CHardDriveImage::HandleCommand(uint8_t command)
 {
     m_command = command;
     switch (command)
@@ -399,7 +474,7 @@ static void swap_strncpy(uint8_t* dst, const char* src, int words)
         dst[i ^ 1] = ' ';
 }
 
-void CHardDrive::IdentifyDrive()
+void CHardDriveImage::IdentifyDrive()
 {
     uint32_t totalsectors = (uint32_t)m_numcylinders * (uint32_t)m_numheads * (uint32_t)m_numsectors;
 
@@ -426,13 +501,13 @@ void CHardDrive::IdentifyDrive()
     InvertBuffer(m_buffer);
 }
 
-uint32_t CHardDrive::CalculateOffset() const
+uint32_t CHardDriveImage::CalculateOffset() const
 {
     int sector = (m_curcylinder * m_numheads + m_curhead) * m_numsectors + (m_cursector - 1);
     return sector * IDE_DISK_SECTOR_SIZE;
 }
 
-void CHardDrive::ReadNextSector()
+void CHardDriveImage::ReadNextSector()
 {
     m_status |= IDE_STATUS_BUSY;
 
@@ -440,7 +515,7 @@ void CHardDrive::ReadNextSector()
     m_timeoutevent = TIMEEVT_READ_SECTOR_DONE;
 }
 
-void CHardDrive::ReadSectorDone()
+void CHardDriveImage::ReadSectorDone()
 {
     m_status &= ~IDE_STATUS_BUSY;
     m_status &= ~IDE_STATUS_ERROR;
@@ -470,7 +545,7 @@ void CHardDrive::ReadSectorDone()
     m_bufferoffset = 0;
 }
 
-void CHardDrive::WriteSectorDone()
+void CHardDriveImage::WriteSectorDone()
 {
     m_status &= ~IDE_STATUS_BUSY;
     m_status &= ~IDE_STATUS_ERROR;
@@ -510,7 +585,7 @@ void CHardDrive::WriteSectorDone()
     m_bufferoffset = 0;
 }
 
-void CHardDrive::NextSector()
+void CHardDriveImage::NextSector()
 {
     // Advance to the next sector, CHS-based
     m_cursector++;
@@ -526,7 +601,7 @@ void CHardDrive::NextSector()
     }
 }
 
-void CHardDrive::ContinueRead()
+void CHardDriveImage::ContinueRead()
 {
     m_bufferoffset = 0;
 
@@ -537,7 +612,7 @@ void CHardDrive::ContinueRead()
         ReadNextSector();
 }
 
-void CHardDrive::ContinueWrite()
+void CHardDriveImage::ContinueWrite()
 {
     m_bufferoffset = 0;
 
@@ -548,5 +623,8 @@ void CHardDrive::ContinueWrite()
     m_timeoutevent = TIMEEVT_WRITE_SECTOR_DONE;
 }
 
-
 //////////////////////////////////////////////////////////////////////
+
+CHardDrive *ProduceHardDriveImage() {
+    return new CHardDriveImage();
+}

@@ -4,7 +4,7 @@
 <context>
     <name>Common</name>
     <message>
-        <location filename="../Common.cpp" line="22"/>
+        <location filename="../Common.cpp" line="23"/>
         <source>ASSERTION FAILED
 
 File: %s
@@ -14,10 +14,10 @@ Press Abort to stop the program, Retry to break to the debugger, or Ignore to co
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common.cpp" line="26"/>
-        <location filename="../Common.cpp" line="42"/>
-        <location filename="../Common.cpp" line="48"/>
-        <location filename="../Common.cpp" line="54"/>
+        <location filename="../Common.cpp" line="27"/>
+        <location filename="../Common.cpp" line="43"/>
+        <location filename="../Common.cpp" line="49"/>
+        <location filename="../Common.cpp" line="55"/>
         <source>UKNC Back to Life</source>
         <translation></translation>
     </message>
@@ -299,32 +299,32 @@ Press Abort to stop the program, Retry to break to the debugger, or Ignore to co
         <translation>Образы картриджей ПЗУ УКНЦ (*.bin)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="655"/>
+        <location filename="../mainwindow.cpp" line="656"/>
         <source>UKNC floppy images (*.dsk *.rtd)</source>
         <translation>Образы дисков УКНЦ (*.dsk *.trd)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="663"/>
+        <location filename="../mainwindow.cpp" line="664"/>
         <source>Failed to attach floppy image.</source>
         <translation>Не удалось подключить образ диска.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="706"/>
+        <location filename="../mainwindow.cpp" line="708"/>
         <source>Please select HDD ROM image as cartridge first.</source>
         <translation>Пожалуйста, сначала выберите образ ПЗУ контроллера жесткого диска в качестве картриджа ПЗУ.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="712"/>
+        <location filename="../mainwindow.cpp" line="714"/>
         <source>UKNC HDD images (*.img)</source>
         <translation>Образы жесткого диска (*.img)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="719"/>
+        <location filename="../mainwindow.cpp" line="721"/>
         <source>Failed to attach hard drive image.</source>
         <translation>Не удалось подключить образ жесткого диска.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="810"/>
+        <location filename="../mainwindow.cpp" line="813"/>
         <source>Script files (*.js)</source>
         <translation>Файлы сценариев (*.js)</translation>
     </message>

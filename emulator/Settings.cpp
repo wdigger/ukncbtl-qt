@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include <QSettings>
 #include "main.h"
 
@@ -135,5 +135,46 @@ quint16 Settings_GetDebugMemoryNumeral()
     return (quint16)value.toUInt();
 }
 
+//////////////////////////////////////////////////////////////////////
+
+Settings::Settings()
+  : m_pSettings(nullptr)
+{
+    m_pSettings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "Back to Life", "UKNCBTL");
+}
+
+Settings::~Settings()
+{
+    if (m_pSettings != nullptr)
+    {
+        delete(m_pSettings);
+        m_pSettings = nullptr;
+    }
+}
+
+void Settings::SetStringValue(const char *name, const char *value)
+{
+    m_pSettings->setValue(QString(name), QString(value));
+}
+
+const char *Settings::GetStringValue(const char *name)
+{
+    QVariant value = m_pSettings->value(QString(name), "");
+    return value.toString().toLocal8Bit().constData();
+}
+
+void Settings::SetEnumStringValue(const char *name, unsigned int num, const char *value)
+{
+    char str[1024];
+    snprintf(str, 1024, "%s%u", name, num);
+    SetStringValue(str, value);
+}
+
+const char *Settings::GetEnumStringValue(const char *name, unsigned int num)
+{
+    char str[1024];
+    snprintf(str, 1024, "%s%u", name, num);
+    return GetStringValue(str);
+}
 
 //////////////////////////////////////////////////////////////////////

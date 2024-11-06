@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "qconsoleview.h"
 #include <QLabel>
 #include <QLineEdit>
@@ -460,7 +460,7 @@ void QConsoleView::cmdPrintAllBreakpoints(const ConsoleCommandParams &)
 
     while (*pbps != 0177777)
     {
-        QString line;  line.sprintf("  %06ho\r\n", *pbps);
+        QString line;  line.asprintf("  %06ho\r\n", *pbps);
         this->print(line);
         pbps++;
     }

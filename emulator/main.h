@@ -1,4 +1,4 @@
-﻿#ifndef MAIN_H
+#ifndef MAIN_H
 #define MAIN_H
 
 //////////////////////////////////////////////////////////////////////
@@ -26,6 +26,21 @@ void Global_loadTranslation(const QString &filename);
 
 //////////////////////////////////////////////////////////////////////
 // Settings
+
+class Settings {
+private:
+    QSettings *m_pSettings;
+
+public:
+    Settings();
+    ~Settings();
+
+    void SetStringValue(const char *name, const char *value);
+    const char *GetStringValue(const char *name);
+
+    void SetEnumStringValue(const char *name, unsigned int num, const char *value);
+    const char *GetEnumStringValue(const char *name, unsigned int num);
+};
 
 void Settings_SetFloppyFilePath(int slot, const QString &sFilePath);
 QString Settings_GetFloppyFilePath(int slot);
